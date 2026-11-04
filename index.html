@@ -60,7 +60,7 @@ const SUPABASE_KEY = 'sb_publishable_789Q3dvPpxdbdpjXSdKGiQ_K8QutZwt';
 const supabase = window.supabase && typeof window.supabase.createClient === "function" ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 const $ = id => document.getElementById(id);
 const auth=$('auth'), app=$('app');
-let creating=new URLSearchParams(window.location.search).get('mode')==='signup', currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
+let creating=new URLSearchParams(window.location.search).get('mode')!=='signin', currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
 
 function showNotice(message, kind='') { const el=$('authNotice'); el.textContent=message; el.className='notice '+kind; }
 function setAuthMode(signup) {
