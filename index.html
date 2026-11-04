@@ -63,7 +63,20 @@ const auth=$('auth'), app=$('app');
 let creating=new URLSearchParams(window.location.search).get('mode')==='signup', currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
 
 function showNotice(message, kind='') { const el=$('authNotice'); el.textContent=message; el.className='notice '+kind; }
-if (creating) { $('authTitle').textContent='Create your account'; $('authSub').textContent='Create your Astra account. New accounts wait for owner approval.'; $('authSubmit').textContent='Create account'; $('authSwitch').textContent='Already have an account? Sign in'; $('authSwitch').href='?mode=signin'; $('usernameField').classList.remove('hidden'); $('username').required=true; }
+function setAuthMode(signup) {
+ creating=signup;
+ $('authTitle').textContent=signup?'Create your account':'Welcome back';
+ $('authSub').textContent=signup?'Create your Astra account. New accounts wait for owner approval.':'Sign in to your corner of the universe.';
+ $('authSubmit').textContent=signup?'Create account':'Sign in';
+ $('authSwitch').textContent=signup?'Already have an account? Sign in':'Need an account? Create one';
+ $('authSwitch').href=signup?'?mode=signin':'?mode=signup';
+ $('usernameField').classList.toggle('hidden',!signup);
+ $('username').required=signup;
+ $('password').autocomplete=signup?'new-password':'current-password';
+ showNotice('Astra accounts are protected by database access rules.');
+}
+setAuthMode(creating);
+$('authSwitch').addEventListener('click',e=>{e.preventDefault();setAuthMode(!creating);history.replaceState(null,'',creating?'?mode=signup':'?mode=signin');});
 if (!supabase) { showNotice('Astra could not load its secure sign-in service. Refresh the page or try another network, then try again.', 'error'); $('authSubmit').disabled=true; }
 function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden'); $('pendingPanel')?.remove(); }
 function escapeText(value) { return String(value ?? ''); }
