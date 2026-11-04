@@ -25,14 +25,14 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 <div id="auth" class="auth-wrap">
  <section class="auth-card">
   <div class="brand"><div class="brand-mark">✦</div><span>ASTRA CHAT</span></div>
-  <h1 id="authTitle">Welcome back</h1><p class="sub" id="authSub">Sign in to your corner of the universe.</p>
-  <form id="authForm">
-   <div class="field hidden" id="usernameField"><label for="username">Username</label><input id="username" autocomplete="username" placeholder="3–24 letters, numbers, or underscores"></div>
+  <h1 id="authTitle">Create your account</h1><p class="sub" id="authSub">Create your Astra account. New accounts wait for owner approval.</p>
+  <form id="authForm" novalidate>
+   <div class="field" id="usernameField"><label for="username">Username</label><input id="username" autocomplete="username" placeholder="3–24 letters, numbers, or underscores" required>
    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
    <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required minlength="8" placeholder="At least 8 characters"></div>
-   <button class="primary wide" id="authSubmit" type="submit">Sign in</button>
+   <button class="primary wide" id="authSubmit" type="submit">Create account</button>
   </form>
-  <a class="switch" id="authSwitch" href="?mode=signup">Need an account? Create one</a>
+  <a class="switch" id="authSwitch" href="?mode=signin">Already have an account? Sign in</a>
   <div class="notice" id="authNotice">Astra accounts are protected by database access rules.</div>
  </section>
 </div>
@@ -85,21 +85,26 @@ function setComposer(enabled) { $('messageInput').disabled=!enabled; $('sendBtn'
 // Sign-up mode is selected by the native ?mode=signup link.
 
 $('authForm').addEventListener('submit',async e=>{
- e.preventDefault(); $('authSubmit').disabled=true; showNotice(creating?'Creating your account…':'Signing in…');
+ e.preventDefault();
+ if(!supabase){showNotice('Astra could not connect to its sign-in service. Please refresh and try again.','error');return;}
  const email=$('email').value.trim(), password=$('password').value, username=$('username').value.trim().toLowerCase();
+ if(!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showNotice('Enter a valid email address.','error');return;}
+ if(password.length<8){showNotice('Your password must be at least 8 characters.','error');return;}
+ if(creating && !/^[a-z0-9_]{3,24}$/.test(username)){showNotice('Username must be 3–24 characters using lowercase letters, numbers, or underscores.','error');return;}
+ $('authSubmit').disabled=true;
+ showNotice(creating?'Creating your account…':'Signing in…');
  try {
   if(creating){
-   if(!/^[a-z0-9_]{3,24}$/.test(username)) throw new Error('Username must be 3–24 characters using lowercase letters, numbers, or underscores.');
    const {data,error}=await supabase.auth.signUp({email,password,options:{data:{username,display_name:username},emailRedirectTo:window.location.origin}});
    if(error) throw error;
-   if(data.session){ await loadAccount(data.session.user); }
+   if(data.session){await loadAccount(data.session.user);}
    else showNotice('Account created. Check your email to confirm it, then sign in. Your account will wait for owner approval.','good');
   } else {
    const {data,error}=await supabase.auth.signInWithPassword({email,password});
    if(error) throw error;
    await loadAccount(data.user);
   }
- } catch(err){showNotice(err.message || 'Something went wrong. Please try again.','error');}
+ } catch(err){showNotice(err?.message||'Signup failed. Please try again.','error');}
  finally{$('authSubmit').disabled=false;}
 });
 
