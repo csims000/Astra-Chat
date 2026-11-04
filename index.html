@@ -76,7 +76,7 @@ $('authForm').addEventListener('submit',async e=>{
  try {
   if(creating){
    if(!/^[a-z0-9_]{3,24}$/.test(username)) throw new Error('Username must be 3–24 characters using lowercase letters, numbers, or underscores.');
-   const {data,error}=await supabase.auth.signUp({email,password,options:{data:{username,display_name:username}}});
+   const {data,error}=await supabase.auth.signUp({email,password,options:{data:{username,display_name:username},emailRedirectTo:window.location.origin}});
    if(error) throw error;
    if(data.session){ await loadAccount(data.session.user); }
    else showNotice('Account created. Check your email to confirm it, then sign in. Your account will wait for owner approval.','good');
@@ -181,10 +181,7 @@ function openModal(title,lines){
  lines.forEach(line=>{const p=document.createElement('div');p.className='member-row';p.textContent=line;box.append(p);});
  const close=document.createElement('button');close.className='primary wide';close.textContent='Close';close.onclick=()=>root.replaceChildren();box.append(close);back.append(box);root.append(back);
 }
-supabase.auth.onAuthStateChange(async(event,session)=>{
- if(event==='SIGNED_OUT'){showAuth();return;}
- if(event==='SIGNED_IN'&&session?.user){try{await loadAccount(session.user);}catch(err){showNotice(err.message,'error');}}
-});
+// Login, sign-out, and initial session are handled explicitly below.
 const {data:{session}}=await supabase.auth.getSession();
 if(session?.user){try{await loadAccount(session.user);}catch(err){showAuth();showNotice(err.message||'Unable to load your account.','error');}}
 </script>
