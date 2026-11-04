@@ -53,11 +53,11 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
  </main>
 </div>
 <div id="modalRoot"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://oodeppgofjlinbnzxila.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_789Q3dvPpxdbdpjXSdKGiQ_K8QutZwt';
-const supabase = window.supabase?.createClient?.(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase && typeof window.supabase.createClient === "function" ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 const $ = id => document.getElementById(id);
 const auth=$('auth'), app=$('app');
 let creating=false, currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
@@ -182,11 +182,21 @@ function openModal(title,lines){
  const close=document.createElement('button');close.className='primary wide';close.textContent='Close';close.onclick=()=>root.replaceChildren();box.append(close);back.append(box);root.append(back);
 }
 // Login, sign-out, and initial session are handled explicitly below.
-if (supabase) {
- const {data:{session},error:sessionError}=await supabase.auth.getSession();
- if(sessionError) showNotice(sessionError.message,'error');
- if(session?.user){try{await loadAccount(session.user);}catch(err){showAuth();showNotice(err.message||'Unable to load your account.','error');}}
-}
+(async function initializeAstra() {
+ if (!supabase) {
+  showNotice('Astra could not load its sign-in service. Check that the network allows cdn.jsdelivr.net, then refresh.', 'error');
+  $('authSubmit').disabled = true;
+  return;
+ }
+ try {
+  const {data:{session},error:sessionError}=await supabase.auth.getSession();
+  if(sessionError) showNotice(sessionError.message,'error');
+  if(session?.user) await loadAccount(session.user);
+ } catch(err) {
+  showAuth();
+  showNotice(err.message || 'Unable to initialize Astra. Please refresh.', 'error');
+ }
+})();
 </script>
 </body>
 </html>
