@@ -88,7 +88,7 @@ $('authForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!supabase){showNotice('Astra could not connect to its sign-in service. Please refresh and try again.','error');return;}
  const email=$('email').value.trim(), password=$('password').value, username=$('username').value.trim().toLowerCase();
- if(!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showNotice('Enter a valid email address.','error');return;}
+ if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showNotice('Enter a valid email address.','error');return;}
  if(password.length<8){showNotice('Your password must be at least 8 characters.','error');return;}
  if(creating && !/^[a-z0-9_]{3,24}$/.test(username)){showNotice('Username must be 3–24 characters using lowercase letters, numbers, or underscores.','error');return;}
  $('authSubmit').disabled=true;
