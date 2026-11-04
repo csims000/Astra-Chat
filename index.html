@@ -53,7 +53,7 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
  </main>
 </div>
 <div id="modalRoot"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 const SUPABASE_URL = 'https://oodeppgofjlinbnzxila.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_789Q3dvPpxdbdpjXSdKGiQ_K8QutZwt';
@@ -69,7 +69,7 @@ function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden
 function escapeText(value) { return String(value ?? ''); }
 function setComposer(enabled) { $('messageInput').disabled=!enabled; $('sendBtn').disabled=!enabled; $('messageInput').placeholder=enabled?'Write a message…':'You cannot send messages in this account state.'; }
 
-// Sign-up mode is toggled by the independent handler above.
+// Sign-up mode is selected by the native ?mode=signup link.
 
 $('authForm').addEventListener('submit',async e=>{
  e.preventDefault(); $('authSubmit').disabled=true; showNotice(creating?'Creating your account…':'Signing in…');
