@@ -53,6 +53,27 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
  </main>
 </div>
 <div id="modalRoot"></div>
+<script>
+/* Keep the sign-up screen switch independent from the Supabase network library. */
+(() => {
+ const btn=document.getElementById('authSwitch');
+ if(!btn) return;
+ btn.addEventListener('click',()=>{
+  const creating=btn.dataset.creating!=='true';
+  btn.dataset.creating=String(creating);
+  window.astraCreating=creating;
+  document.getElementById('authTitle').textContent=creating?'Create your account':'Welcome back';
+  document.getElementById('authSub').textContent=creating?'Create your Astra account. New accounts wait for owner approval.':'Sign in to your corner of the universe.';
+  document.getElementById('authSubmit').textContent=creating?'Create account':'Sign in';
+  btn.textContent=creating?'Already have an account? Sign in':'Need an account? Create one';
+  document.getElementById('usernameField').classList.toggle('hidden',!creating);
+  document.getElementById('username').required=creating;
+  const notice=document.getElementById('authNotice');
+  notice.textContent=creating?'Choose a username and use an email address you can verify.':'Sign in with your email and password.';
+  notice.className='notice';
+ });
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://oodeppgofjlinbnzxila.supabase.co';
@@ -60,7 +81,7 @@ const SUPABASE_KEY = 'sb_publishable_789Q3dvPpxdbdpjXSdKGiQ_K8QutZwt';
 const supabase = window.supabase && typeof window.supabase.createClient === "function" ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 const $ = id => document.getElementById(id);
 const auth=$('auth'), app=$('app');
-let creating=false, currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
+let creating=window.astraCreating===true, currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
 
 function showNotice(message, kind='') { const el=$('authNotice'); el.textContent=message; el.className='notice '+kind; }
 if (!supabase) { showNotice('Astra could not load its secure sign-in service. Refresh the page or try another network, then try again.', 'error'); $('authSubmit').disabled=true; }
@@ -68,7 +89,7 @@ function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden
 function escapeText(value) { return String(value ?? ''); }
 function setComposer(enabled) { $('messageInput').disabled=!enabled; $('sendBtn').disabled=!enabled; $('messageInput').placeholder=enabled?'Write a message…':'You cannot send messages in this account state.'; }
 
-$('authSwitch').onclick=()=>{creating=!creating;$('authTitle').textContent=creating?'Create your account':'Welcome back';$('authSub').textContent=creating?'Create your Astra account. New accounts wait for owner approval.':'Sign in to your corner of the universe.';$('authSubmit').textContent=creating?'Create account':'Sign in';$('authSwitch').textContent=creating?'Already have an account? Sign in':'Need an account? Create one';$('usernameField').classList.toggle('hidden',!creating);$('username').required=creating;showNotice(creating?'Choose a username and use an email address you can verify.':'Sign in with your email and password.');};
+// Sign-up mode is toggled by the independent handler above.
 
 $('authForm').addEventListener('submit',async e=>{
  e.preventDefault(); $('authSubmit').disabled=true; showNotice(creating?'Creating your account…':'Signing in…');
