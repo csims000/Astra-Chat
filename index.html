@@ -53,17 +53,17 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
  </main>
 </div>
 <div id="modalRoot"></div>
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.0';
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 const SUPABASE_URL = 'https://oodeppgofjlinbnzxila.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_789Q3dvPpxdbdpjXSdKGiQ_K8QutZwt';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase?.createClient?.(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 const auth=$('auth'), app=$('app');
 let creating=false, currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
 
 function showNotice(message, kind='') { const el=$('authNotice'); el.textContent=message; el.className='notice '+kind; }
+if (!supabase) { showNotice('Astra could not load its secure sign-in service. Refresh the page or try another network, then try again.', 'error'); $('authSubmit').disabled=true; }
 function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden'); $('pendingPanel')?.remove(); }
 function escapeText(value) { return String(value ?? ''); }
 function setComposer(enabled) { $('messageInput').disabled=!enabled; $('sendBtn').disabled=!enabled; $('messageInput').placeholder=enabled?'Write a message…':'You cannot send messages in this account state.'; }
@@ -182,8 +182,11 @@ function openModal(title,lines){
  const close=document.createElement('button');close.className='primary wide';close.textContent='Close';close.onclick=()=>root.replaceChildren();box.append(close);back.append(box);root.append(back);
 }
 // Login, sign-out, and initial session are handled explicitly below.
-const {data:{session}}=await supabase.auth.getSession();
-if(session?.user){try{await loadAccount(session.user);}catch(err){showAuth();showNotice(err.message||'Unable to load your account.','error');}}
+if (supabase) {
+ const {data:{session},error:sessionError}=await supabase.auth.getSession();
+ if(sessionError) showNotice(sessionError.message,'error');
+ if(session?.user){try{await loadAccount(session.user);}catch(err){showAuth();showNotice(err.message||'Unable to load your account.','error');}}
+}
 </script>
 </body>
 </html>
