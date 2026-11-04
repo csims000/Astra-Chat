@@ -13,7 +13,7 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(430px,100%);padding:34px;border:1px solid var(--line);border-radius:24px;background:#100c1eef;box-shadow:0 25px 90px #0008;position:relative}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.16em}.brand-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#9b72ff,#4c2a91);box-shadow:0 0 28px #9b72ff55;font-size:22px}
 .auth-card h1{font-size:28px;margin:28px 0 5px}.sub{color:var(--muted);margin:0 0 24px}.field{display:grid;gap:7px;margin:15px 0}.field label{color:#cfc5e7;font-size:13px}.field input{width:100%;border:1px solid var(--line);background:#0b0914;color:white;padding:13px 14px;border-radius:11px;outline:none}.field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px #a78bfa20}
-.primary{border:0;background:linear-gradient(110deg,#9c78ff,#7045c5);color:white;font-weight:700;border-radius:11px;padding:13px 18px}.wide{width:100%;margin-top:10px}.switch{color:#cbb8ff;background:none;border:0;padding:12px 0}.notice{font-size:12px;color:var(--muted);margin-top:14px;min-height:18px}.notice.error{color:var(--bad)}.notice.good{color:var(--good)}
+.primary{border:0;background:linear-gradient(110deg,#9c78ff,#7045c5);color:white;font-weight:700;border-radius:11px;padding:13px 18px}.wide{width:100%;margin-top:10px}.switch{display:inline-block;color:#cbb8ff;background:none;border:0;padding:12px 0;text-decoration:none;cursor:pointer}.switch:hover{text-decoration:underline}.notice{font-size:12px;color:var(--muted);margin-top:14px;min-height:18px}.notice.error{color:var(--bad)}.notice.good{color:var(--good)}
 .pending{max-width:430px;margin:22px auto 0;padding:18px;border:1px solid #624c91;border-radius:14px;background:#1b1430;text-align:center}.pending p{color:var(--muted);font-size:13px}.pending button{margin-top:8px}
 .app{height:100vh;min-height:600px;display:grid;grid-template-columns:248px 1fr;position:relative}.sidebar{background:#0c0917ef;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px;min-height:0}.side-brand{padding:0 9px 23px}.workspace{border:1px solid var(--line);background:#151026;border-radius:13px;padding:12px;margin-bottom:22px}.workspace small{display:block;color:var(--muted);font-size:11px;letter-spacing:.12em}.workspace strong{display:block;margin-top:3px}.section-label{font-size:10px;letter-spacing:.16em;color:#807596;padding:8px 10px}.channel{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border:0;border-radius:9px;color:#bcb2d1;background:transparent;text-align:left}.channel:hover,.channel.active{background:#251b3d;color:white}.channel .hash{color:#8c73c4;font-size:17px}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:13px}.profile{display:flex;align-items:center;gap:10px;padding:10px}.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#542e8b);display:grid;place-items:center;font-weight:800;flex:none}.profile small{display:block;color:var(--muted)}
 .main{display:grid;grid-template-rows:66px 1fr 80px;min-width:0;min-height:0}.topbar{border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 25px;background:#0d0a18a8}.room-title{font-weight:750}.room-title span{color:var(--purple);margin-right:8px}.top-actions{display:flex;gap:9px}.ghost{border:1px solid var(--line);background:#171229;color:#d7ccef;border-radius:9px;padding:8px 11px}.messages{padding:26px;overflow:auto}.welcome{max-width:720px;margin:10vh auto;text-align:center;color:var(--muted)}.welcome .orb{width:76px;height:76px;margin:auto auto 18px;border-radius:25px;display:grid;place-items:center;font-size:34px;color:white;background:linear-gradient(145deg,#a78bfa,#39205f);box-shadow:0 0 60px #9c78ff40}.welcome h2{color:white;font-size:25px;margin:0 0 8px}.message{display:flex;gap:12px;margin:0 auto 20px;max-width:850px}.message strong{font-size:14px}.message time{color:#817694;font-size:11px;margin-left:8px}.message p{margin:5px 0;color:#d8d0e8;white-space:pre-wrap;overflow-wrap:anywhere}.composer{padding:12px 25px 20px;border-top:1px solid var(--line)}.compose-box{max-width:900px;margin:auto;display:flex;gap:10px;background:#171229;border:1px solid var(--line);border-radius:14px;padding:8px}.compose-box input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:white;padding:8px}.send{border:0;background:#8d67e8;color:white;border-radius:10px;padding:9px 15px}.send:disabled{opacity:.5;cursor:not-allowed}.mobile-menu{display:none}
@@ -32,7 +32,7 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
    <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required minlength="8" placeholder="At least 8 characters"></div>
    <button class="primary wide" id="authSubmit" type="submit">Sign in</button>
   </form>
-  <button class="switch" id="authSwitch" type="button">Need an account? Create one</button>
+  <a class="switch" id="authSwitch" href="?mode=signup">Need an account? Create one</a>
   <div class="notice" id="authNotice">Astra accounts are protected by database access rules.</div>
  </section>
 </div>
@@ -54,26 +54,7 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 </div>
 <div id="modalRoot"></div>
 <script>
-/* Keep the sign-up screen switch independent from the Supabase network library. */
-(() => {
- const btn=document.getElementById('authSwitch');
- if(!btn) return;
- btn.addEventListener('click',()=>{
-  const creating=btn.dataset.creating!=='true';
-  btn.dataset.creating=String(creating);
-  window.astraCreating=creating;
-  document.getElementById('authTitle').textContent=creating?'Create your account':'Welcome back';
-  document.getElementById('authSub').textContent=creating?'Create your Astra account. New accounts wait for owner approval.':'Sign in to your corner of the universe.';
-  document.getElementById('authSubmit').textContent=creating?'Create account':'Sign in';
-  btn.textContent=creating?'Already have an account? Sign in':'Need an account? Create one';
-  document.getElementById('usernameField').classList.toggle('hidden',!creating);
-  document.getElementById('username').required=creating;
-  const notice=document.getElementById('authNotice');
-  notice.textContent=creating?'Choose a username and use an email address you can verify.':'Sign in with your email and password.';
-  notice.className='notice';
- });
-})();
-</script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://oodeppgofjlinbnzxila.supabase.co';
@@ -81,9 +62,10 @@ const SUPABASE_KEY = 'sb_publishable_789Q3dvPpxdbdpjXSdKGiQ_K8QutZwt';
 const supabase = window.supabase && typeof window.supabase.createClient === "function" ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 const $ = id => document.getElementById(id);
 const auth=$('auth'), app=$('app');
-let creating=window.astraCreating===true, currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
+let creating=new URLSearchParams(window.location.search).get('mode')==='signup', currentUser=null, currentProfile=null, currentChannel=null, messageSubscription=null, channels=[];
 
 function showNotice(message, kind='') { const el=$('authNotice'); el.textContent=message; el.className='notice '+kind; }
+if (creating) { $('authTitle').textContent='Create your account'; $('authSub').textContent='Create your Astra account. New accounts wait for owner approval.'; $('authSubmit').textContent='Create account'; $('authSwitch').textContent='Already have an account? Sign in'; $('authSwitch').href='?mode=signin'; $('usernameField').classList.remove('hidden'); $('username').required=true; }
 if (!supabase) { showNotice('Astra could not load its secure sign-in service. Refresh the page or try another network, then try again.', 'error'); $('authSubmit').disabled=true; }
 function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden'); $('pendingPanel')?.remove(); }
 function escapeText(value) { return String(value ?? ''); }
