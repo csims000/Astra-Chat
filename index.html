@@ -76,7 +76,13 @@ function setAuthMode(signup) {
  showNotice('Astra accounts are protected by database access rules.');
 }
 setAuthMode(creating);
-// The account-mode link uses its real URL so it still works if JavaScript is delayed.
+$('authSwitch').addEventListener('click',e=>{
+ e.preventDefault();
+ if(authBusy)return;
+ setAuthMode(!creating);
+ history.replaceState(null,'',creating?'?mode=signup':'?mode=signin');
+});
+
 if (!supabase) { showNotice('Astra could not load its secure sign-in service. Refresh the page or try another network, then try again.', 'error'); $('authSubmit').disabled=true; }
 function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden'); $('pendingPanel')?.remove(); }
 function escapeText(value) { return String(value ?? ''); }
