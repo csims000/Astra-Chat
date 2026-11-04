@@ -76,7 +76,7 @@ function setAuthMode(signup) {
  showNotice('Astra accounts are protected by database access rules.');
 }
 setAuthMode(creating);
-$('authSwitch').addEventListener('click',e=>{e.preventDefault();setAuthMode(!creating);history.replaceState(null,'',creating?'?mode=signup':'?mode=signin');});
+// The account-mode link uses its real URL so it still works if JavaScript is delayed.
 if (!supabase) { showNotice('Astra could not load its secure sign-in service. Refresh the page or try another network, then try again.', 'error'); $('authSubmit').disabled=true; }
 function showAuth() { auth.classList.remove('hidden'); app.classList.add('hidden'); $('pendingPanel')?.remove(); }
 function escapeText(value) { return String(value ?? ''); }
@@ -84,29 +84,39 @@ function setComposer(enabled) { $('messageInput').disabled=!enabled; $('sendBtn'
 
 // Sign-up mode is selected by the native ?mode=signup link.
 
-$('authForm').addEventListener('submit',async e=>{
- e.preventDefault();
- if(!supabase){showNotice('Astra could not connect to its sign-in service. Please refresh and try again.','error');return;}
+let authBusy=false;
+async function processAuth(){
+ if(authBusy)return;
+ if(!supabase){showNotice('Astra could not connect to its sign-in service. Refresh the page and try again.','error');return;}
  const email=$('email').value.trim(), password=$('password').value, username=$('username').value.trim().toLowerCase();
- if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showNotice('Enter a valid email address.','error');return;}
- if(password.length<8){showNotice('Your password must be at least 8 characters.','error');return;}
- if(creating && !/^[a-z0-9_]{3,24}$/.test(username)){showNotice('Username must be 3–24 characters using lowercase letters, numbers, or underscores.','error');return;}
+ if(!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showNotice('Enter a valid email address.','error');$('email').focus();return;}
+ if(password.length<8){showNotice('Your password must be at least 8 characters.','error');$('password').focus();return;}
+ if(creating && !/^[a-z0-9_]{3,24}$/.test(username)){showNotice('Username must be 3–24 characters using lowercase letters, numbers, or underscores.','error');$('username').focus();return;}
+ authBusy=true;
  $('authSubmit').disabled=true;
- showNotice(creating?'Creating your account…':'Signing in…');
+ $('authSubmit').textContent=creating?'Creating account…':'Signing in…';
+ showNotice(creating?'Connecting to Astra securely…':'Signing in…');
  try {
   if(creating){
    const {data,error}=await supabase.auth.signUp({email,password,options:{data:{username,display_name:username},emailRedirectTo:window.location.origin}});
    if(error) throw error;
    if(data.session){await loadAccount(data.session.user);}
-   else showNotice('Account created. Check your email to confirm it, then sign in. Your account will wait for owner approval.','good');
+   else showNotice('Signup request received. Check your email for a confirmation link. After confirming, sign in; new accounts wait for owner approval.','good');
   } else {
    const {data,error}=await supabase.auth.signInWithPassword({email,password});
    if(error) throw error;
    await loadAccount(data.user);
   }
- } catch(err){showNotice(err?.message||'Signup failed. Please try again.','error');}
- finally{$('authSubmit').disabled=false;}
-});
+ } catch(err){
+  showNotice(err?.message||'Astra could not complete the request. Please try again.','error');
+ } finally {
+  authBusy=false;
+  $('authSubmit').disabled=false;
+  $('authSubmit').textContent=creating?'Create account':'Sign in';
+ }
+}
+$('authForm').addEventListener('submit',e=>{e.preventDefault();processAuth();});
+$('authSubmit').addEventListener('click',e=>{e.preventDefault();processAuth();});
 
 async function loadAccount(user){
  currentUser=user;
